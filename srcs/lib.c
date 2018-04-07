@@ -11,7 +11,20 @@
 /* ************************************************************************** */
 
 #include "wolf3d.h"
+#include "mlx.h"
 #include "libft.h"
+
+void	ft_fill_pixel(t_env *env, int x, int y, int color)
+{
+	int i;
+
+	i = ((y * WIDTH) + x) * 4;
+	if (i < 0 || i >= WIDTH * HEIGHT * 4)
+		return ;
+	env->str[i] = color & 0xFF;
+	env->str[i + 1] = (color >> 8) & 0xFF;
+	env->str[i + 2] = (color >> 16) & 0xFF;
+}
 
 void	ft_usage(void)
 {

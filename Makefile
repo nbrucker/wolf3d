@@ -27,7 +27,8 @@ CFLAGS = -Wall -Wextra -Werror
 SRCS = main.c \
 		free.c \
 		lib.c \
-		parse.c
+		parse.c \
+		events.c
 
 MINILIBXDIR = minilibx/
 
