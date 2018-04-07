@@ -19,6 +19,7 @@ int		main(int argc, char **argv)
 	if (argc != 2)
 		ft_usage();
 	ft_get_map(&env, argv[1]);
+	ft_check_map(&env);
 	ft_freeint(env.map, env.map_y);
 	return (0);
 }

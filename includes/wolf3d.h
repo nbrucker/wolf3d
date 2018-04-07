@@ -40,5 +40,6 @@ void				ft_add(t_line **ptr, char **split);
 int					*ft_char_to_int(char **split, int len);
 int					**ft_list_to_map(t_env *env, t_line *line);
 void				ft_get_map(t_env *env, char *file);
+void				ft_check_map(t_env *env);
 
 #endif

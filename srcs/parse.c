@@ -13,6 +13,26 @@
 #include "libft.h"
 #include "wolf3d.h"
 
+void	ft_check_map(t_env *env)
+{
+	int i;
+
+	i = 0;
+	while (i < env->map_x)
+	{
+		if (env->map[0][i] < 1 || env->map[env->map_y - 1][i] < 1)
+			ft_error("Map error");
+		i++;
+	}
+	i = 0;
+	while (i < env->map_y)
+	{
+		if (env->map[i][0] < 1 || env->map[i][env->map_x - 1] < 1)
+			ft_error("Map error");
+		i++;
+	}
+}
+
 void	ft_add(t_line **ptr, char **split)
 {
 	t_line *new;
