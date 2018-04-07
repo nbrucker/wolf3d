@@ -28,6 +28,8 @@ typedef struct		s_env
 	void			*win;
 	void			*image;
 	char			*str;
+	double			player_x;
+	double			player_y;
 }					t_env;
 
 typedef struct		s_line

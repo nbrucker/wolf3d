@@ -30,6 +30,32 @@ void	ft_init_mlx(t_env *env)
 		ft_error("MLX Error");
 }
 
+void	ft_get_position(t_env *env)
+{
+	int i;
+	int j;
+
+	env->player_x = -1;
+	env->player_y = -1;
+	i = 0;
+	while (i < env->map_y)
+	{
+		j = 0;
+		while (j < env->map_x)
+		{
+			if (env->map[i][j] == 9)
+			{
+				env->player_y = i;
+				env->player_x = j;
+			}
+			j++;
+		}
+		i++;
+	}
+	if (env->player_x == -1 || env->player_y == -1)
+		ft_error("Map error");
+}
+
 int		main(int argc, char **argv)
 {
 	t_env	env;
@@ -38,6 +64,7 @@ int		main(int argc, char **argv)
 		ft_usage();
 	ft_get_map(&env, argv[1]);
 	ft_check_map(&env);
+	ft_get_position(&env);
 	ft_init_mlx(&env);
 	mlx_hook(env.win, 2, 3, ft_input, &env);
 	mlx_hook(env.win, 17, 1L << 17, ft_exit, &env);

@@ -86,7 +86,7 @@ int		**ft_list_to_map(t_env *env, t_line *line)
 		env->map_y++;
 		line = line->next;
 	}
-	if (env->map_y == 0 || env->map_x == 0)
+	if (env->map_y < 3 || env->map_x < 3)
 		ft_error("Map error");
 	map[env->map_y] = 0;
 	return (map);
@@ -115,7 +115,7 @@ void	ft_get_map(t_env *env, char *file)
 		ft_error("Error reading file");
 	if (close(fd) == -1)
 		ft_error("Error closing file");
-	while (ptr->previous)
+	while (ptr && ptr->previous)
 		ptr = ptr->previous;
 	env->map = ft_list_to_map(env, ptr);
 	ft_freelist(ptr);
