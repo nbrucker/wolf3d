@@ -17,7 +17,15 @@ int		ft_input(int key, t_env *env)
 {
 	if (key == 53)
 		exit(0);
-	(void)env;
+	else if (key == 13)
+		env->player_y -= 1;
+	else if (key == 1)
+		env->player_y += 1;
+	else if (key == 0)
+		env->player_x -= 1;
+	else if (key == 2)
+		env->player_x += 1;
+	ft_start(env);
 	return (0);
 }
 

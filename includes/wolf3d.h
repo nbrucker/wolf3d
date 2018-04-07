@@ -15,6 +15,8 @@
 
 # include <string.h>
 # include <stdlib.h>
+# include <math.h>
+#include <stdio.h>
 
 # define WIDTH 800
 # define HEIGHT 600
@@ -55,5 +57,6 @@ void				ft_fill_pixel(t_env *env, int x, int y, int color);
 int					ft_exit(t_env *env);
 int					ft_input(int key, t_env *env);
 void				ft_init_mlx(t_env *env);
+void				ft_start(t_env *env);
 
 #endif

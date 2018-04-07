@@ -32,28 +32,59 @@ void	ft_init_mlx(t_env *env)
 
 void	ft_get_position(t_env *env)
 {
-	int i;
-	int j;
+	int x;
+	int y;
 
 	env->player_x = -1;
 	env->player_y = -1;
-	i = 0;
-	while (i < env->map_y)
+	y = 0;
+	while (y < env->map_y && env->player_x == -1 && env->player_y == -1)
 	{
-		j = 0;
-		while (j < env->map_x)
+		x = 0;
+		while (x < env->map_x && env->player_x == -1 && env->player_y == -1)
 		{
-			if (env->map[i][j] == 9)
+			if (env->map[y][x] < 1)
 			{
-				env->player_y = i;
-				env->player_x = j;
+				env->player_y = y;
+				env->player_x = x;
 			}
-			j++;
+			x++;
 		}
-		i++;
+		y++;
 	}
 	if (env->player_x == -1 || env->player_y == -1)
 		ft_error("Map error");
+}
+
+void	ft_start(t_env *env)
+{
+	int x;
+	int y;
+	int real_x;
+	int real_y;
+
+	y = 0;
+	while (y < HEIGHT)
+	{
+		x = 0;
+		while (x < WIDTH)
+		{
+			real_x = floor((double)x / ((double)WIDTH / env->map_x));
+			real_y = floor((double)y / ((double)HEIGHT / env->map_y));
+			if (real_x == env->player_x && real_y == env->player_y)
+			{
+				if (env->map[real_y][real_x] < 1)
+					ft_fill_pixel(env, x, y, 0x00FF00);
+				else
+					ft_fill_pixel(env, x, y, 0xFF0000);
+			}
+			else
+				ft_fill_pixel(env, x, y, 255);
+			x++;
+		}
+		y++;
+	}
+	ft_expose(env);
 }
 
 int		main(int argc, char **argv)
@@ -66,6 +97,7 @@ int		main(int argc, char **argv)
 	ft_check_map(&env);
 	ft_get_position(&env);
 	ft_init_mlx(&env);
+	ft_start(&env);
 	mlx_hook(env.win, 2, 3, ft_input, &env);
 	mlx_hook(env.win, 17, 1L << 17, ft_exit, &env);
 	mlx_expose_hook(env.win, ft_expose, &env);
