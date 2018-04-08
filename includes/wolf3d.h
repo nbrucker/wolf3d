@@ -18,8 +18,8 @@
 # include <math.h>
 #include <stdio.h>
 
-# define WIDTH 800
-# define HEIGHT 600
+# define WIDTH 1200
+# define HEIGHT 800
 
 typedef struct		s_env
 {
@@ -32,6 +32,7 @@ typedef struct		s_env
 	char			*str;
 	double			player_x;
 	double			player_y;
+	int				angle;
 }					t_env;
 
 typedef struct		s_line
@@ -40,6 +41,12 @@ typedef struct		s_line
 	struct s_line	*previous;
 	struct s_line	*next;
 }					t_line;
+
+typedef struct		s_dist
+{
+	double			x;
+	double			y;
+}					t_dist;
 
 void				ft_freechar(char **map);
 void				ft_freeint(int **map, int len);
@@ -57,6 +64,7 @@ void				ft_fill_pixel(t_env *env, int x, int y, int color);
 int					ft_exit(t_env *env);
 int					ft_input(int key, t_env *env);
 void				ft_init_mlx(t_env *env);
-void				ft_start(t_env *env);
+void				ft_display(t_env *env);
+int					ft_intab(t_env *env, int x, int y);
 
 #endif

@@ -56,33 +56,81 @@ void	ft_get_position(t_env *env)
 		ft_error("Map error");
 }
 
-void	ft_start(t_env *env)
+int		ft_intab(t_env *env, int x, int y)
 {
-	int x;
-	int y;
-	int real_x;
-	int real_y;
+	if (x < 0 || y < 0 || x >= env->map_x || y >= env->map_y)
+		return (0);
+	return (1);
+}
+
+void	ft_trump(t_env *env, int x, int h, int color)
+{
+	int		y;
+	int		mid;
 
 	y = 0;
+	h = h / 2;
+	mid = HEIGHT / 2;
+	while (y < mid - h && y < HEIGHT)
+	{
+		ft_fill_pixel(env, x, y, 0xcfdeee);
+		y++;
+	}
+	while (y < mid + h && y < HEIGHT)
+	{
+		ft_fill_pixel(env, x, y, color);
+		y++;
+	}
 	while (y < HEIGHT)
 	{
-		x = 0;
-		while (x < WIDTH)
-		{
-			real_x = floor((double)x / ((double)WIDTH / env->map_x));
-			real_y = floor((double)y / ((double)HEIGHT / env->map_y));
-			if (real_x == env->player_x && real_y == env->player_y)
-			{
-				if (env->map[real_y][real_x] < 1)
-					ft_fill_pixel(env, x, y, 0x00FF00);
-				else
-					ft_fill_pixel(env, x, y, 0xFF0000);
-			}
-			else
-				ft_fill_pixel(env, x, y, 255);
-			x++;
-		}
+		ft_fill_pixel(env, x, y, 0x767676);
 		y++;
+	}
+}
+
+int		ft_get_color(t_env *env, double x, double y)
+{
+	int color;
+
+	color = 0;
+	(void)env;
+	(void)x;
+	(void)y;
+	return (color);
+}
+
+void	ft_get_wall(t_env *env, double angle, int pos_x)
+{
+	double	distance;
+	int		hauteur;
+	double	x;
+	double	y;
+
+	x = env->player_x;
+	y = env->player_y;
+	while (ft_intab(env, floor(x), floor(y)) && env->map[(int)floor(y)][(int)floor(x)] < 1)
+	{
+		x += cos(angle * M_PI / 180) / 300;
+		y += sin(angle * M_PI / 180) / 300;
+	}
+	distance = sqrt(pow(x - env->player_x, 2) + pow(y - env->player_y, 2));
+	distance *= cos((angle - env->angle) * M_PI / 180);
+	hauteur = floor((double)HEIGHT / distance);
+	ft_trump(env, pos_x, hauteur, ft_get_color(env, x, y));
+}
+
+void	ft_display(t_env *env)
+{
+	double	angle;
+	int		x;
+
+	x = 0;
+	angle = (double)env->angle - 30;
+	while (x < WIDTH)
+	{
+		ft_get_wall(env, angle, x);
+		angle += (double)60 / (double)WIDTH;
+		x++;
 	}
 	ft_expose(env);
 }
@@ -97,7 +145,7 @@ int		main(int argc, char **argv)
 	ft_check_map(&env);
 	ft_get_position(&env);
 	ft_init_mlx(&env);
-	ft_start(&env);
+	ft_display(&env);
 	mlx_hook(env.win, 2, 3, ft_input, &env);
 	mlx_hook(env.win, 17, 1L << 17, ft_exit, &env);
 	mlx_expose_hook(env.win, ft_expose, &env);
