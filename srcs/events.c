@@ -34,6 +34,7 @@ int		ft_input(int key, t_env *env)
 		env->angle += 5;
 	else if (key == 0)
 		env->angle -= 5;
+	ft_display(env);
 	return (0);
 }
 
