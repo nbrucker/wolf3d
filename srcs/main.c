@@ -28,6 +28,7 @@ void	ft_init_mlx(t_env *env)
 		ft_error("MLX Error");
 	if ((env->str = mlx_get_data_addr(env->image, &bpp, &s_l, &endian)) == NULL)
 		ft_error("MLX Error");
+	env->angle = 0;
 }
 
 void	ft_get_position(t_env *env)
@@ -35,13 +36,15 @@ void	ft_get_position(t_env *env)
 	int x;
 	int y;
 
+	if (env->map_y < 3 || env->map_x < 3)
+		ft_error("Map error");
 	env->player_x = -1;
 	env->player_y = -1;
-	y = 0;
-	while (y < env->map_y && env->player_x == -1 && env->player_y == -1)
+	y = 1;
+	while (y < env->map_y - 1 && env->player_y == -1 && env->player_x == -1)
 	{
-		x = 0;
-		while (x < env->map_x && env->player_x == -1 && env->player_y == -1)
+		x = 1;
+		while (x < env->map_x - 1 && env->player_y == -1 && env->player_x == -1)
 		{
 			if (env->map[y][x] < 1)
 			{
@@ -52,7 +55,7 @@ void	ft_get_position(t_env *env)
 		}
 		y++;
 	}
-	if (env->player_x == -1 || env->player_y == -1)
+	if (env->player_y == -1 || env->player_x == -1)
 		ft_error("Map error");
 }
 
@@ -65,71 +68,84 @@ int		ft_intab(t_env *env, int x, int y)
 
 void	ft_trump(t_env *env, int x, int h, int color)
 {
-	int		y;
-	int		mid;
+	int y;
 
 	y = 0;
-	h = h / 2;
-	mid = HEIGHT / 2;
-	while (y < mid - h && y < HEIGHT)
+	while (y < (HEIGHT / 2) - (h / 2) && y < HEIGHT)
 	{
-		ft_fill_pixel(env, x, y, 0xcfdeee);
+		ft_fill_pixel(env, x, y, 0xFFFFFF);
 		y++;
 	}
-	while (y < mid + h && y < HEIGHT)
+	while (y < (HEIGHT / 2) + (h / 2) && y < HEIGHT)
 	{
 		ft_fill_pixel(env, x, y, color);
 		y++;
 	}
 	while (y < HEIGHT)
 	{
-		ft_fill_pixel(env, x, y, 0x767676);
+		ft_fill_pixel(env, x, y, 0x000000);
 		y++;
 	}
 }
 
-int		ft_get_color(t_env *env, double x, double y)
+int		ft_color(int side, double ratio_x, double ratio_y)
 {
-	int color;
-
-	color = 0;
-	(void)env;
-	(void)x;
-	(void)y;
-	return (color);
-}
-
-void	ft_get_wall(t_env *env, double angle, int pos_x)
-{
-	double	distance;
-	int		hauteur;
-	double	x;
-	double	y;
-
-	x = env->player_x;
-	y = env->player_y;
-	while (ft_intab(env, floor(x), floor(y)) && env->map[(int)floor(y)][(int)floor(x)] < 1)
+	if (side == 0)
 	{
-		x += cos(angle * M_PI / 180) / 300;
-		y += sin(angle * M_PI / 180) / 300;
+		if (ratio_x < 0)
+			return (0xFF0000);
+		return (0x00FF00);
 	}
-	distance = sqrt(pow(x - env->player_x, 2) + pow(y - env->player_y, 2));
-	distance *= cos((angle - env->angle) * M_PI / 180);
-	hauteur = floor((double)HEIGHT / distance);
-	ft_trump(env, pos_x, hauteur, ft_get_color(env, x, y));
+	else
+	{
+		if (ratio_y < 0)
+			return (0x0000FF);
+		return (0xF0F0F0);
+	}
 }
 
 void	ft_display(t_env *env)
 {
-	double	angle;
 	int		x;
+	double	angle;
 
 	x = 0;
-	angle = (double)env->angle - 30;
+	angle = env->angle - 30;
 	while (x < WIDTH)
 	{
-		ft_get_wall(env, angle, x);
-		angle += (double)60 / (double)WIDTH;
+		angle = fmod(angle, 360);
+		if (angle < 0)
+			angle += 360;
+		double round_x = env->player_x;
+		double round_y = env->player_y;
+		double ratio_x = sin(angle * M_PI / 180);
+		double ratio_y = cos(angle * M_PI / 180) * -1;
+		int side;
+		while (ft_intab(env, (int)floor(round_x), (int)floor(round_y)) && env->map[(int)floor(round_y)][(int)floor(round_x)] < 1)
+		{
+			if (env->map[(int)floor(round_y + (ratio_y / 500))][(int)floor(round_x)] > 0)
+			{
+				round_y += ratio_y / 500;
+				side = 1;
+				break ;
+			}
+			if (env->map[(int)floor(round_y)][(int)floor(round_x + (ratio_x / 500))] > 0)
+			{
+				round_x += ratio_x / 500;
+				side = 0;
+				break ;
+			}
+			round_x += ratio_x / 500;
+			round_y += ratio_y / 500;
+			if (ratio_x > ratio_y)
+				side = 0;
+			else
+				side = 1;
+		}
+		double distance = sqrt(pow(env->player_x - round_x, 2) + pow(env->player_y - round_y, 2));
+		distance *= cos((angle - env->angle) * M_PI / 180);
+		ft_trump(env, x, HEIGHT / distance, ft_color(side, ratio_x, ratio_y));
+		angle += 60 / (double)WIDTH;
 		x++;
 	}
 	ft_expose(env);
