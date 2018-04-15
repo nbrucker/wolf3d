@@ -33,6 +33,27 @@ typedef struct		s_env
 	double			player_x;
 	double			player_y;
 	double			angle;
+	double			round_x;
+	double			round_y;
+	int				side;
+	double			ratio_x;
+	double			ratio_y;
+	double			distance;
+	char			*texture1;
+	int				width_img1;
+	int				height_img1;
+	char			*texture2;
+	int				width_img2;
+	int				height_img2;
+	char			*texture3;
+	int				width_img3;
+	int				height_img3;
+	char			*texture4;
+	int				width_img4;
+	int				height_img4;
+	char			*texture;
+	int				width_img;
+	int				height_img;
 }					t_env;
 
 typedef struct		s_line
@@ -65,6 +86,6 @@ int					ft_exit(t_env *env);
 int					ft_input(int key, t_env *env);
 void				ft_init_mlx(t_env *env);
 void				ft_display(t_env *env);
-int					ft_intab(t_env *env, int x, int y);
+int					ft_intab(t_env *env, double x, double y);
 
 #endif

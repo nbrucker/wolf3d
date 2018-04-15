@@ -19,6 +19,7 @@ void	ft_init_mlx(t_env *env)
 	int		bpp;
 	int		s_l;
 	int		endian;
+	void	*ptr;
 
 	if ((env->mlx = mlx_init()) == NULL)
 		ft_error("MLX Error");
@@ -28,7 +29,23 @@ void	ft_init_mlx(t_env *env)
 		ft_error("MLX Error");
 	if ((env->str = mlx_get_data_addr(env->image, &bpp, &s_l, &endian)) == NULL)
 		ft_error("MLX Error");
-	env->angle = 0;
+	env->angle = 135;
+	ptr = mlx_xpm_file_to_image(env->mlx, "textures/texture_1.xpm",
+			&env->width_img1, &env->height_img1);
+	env->texture1 = mlx_get_data_addr(ptr, &bpp,
+			&s_l, &endian);
+	ptr = mlx_xpm_file_to_image(env->mlx, "textures/texture_2.xpm",
+			&env->width_img2, &env->height_img2);
+	env->texture2 = mlx_get_data_addr(ptr, &bpp,
+			&s_l, &endian);
+	ptr = mlx_xpm_file_to_image(env->mlx, "textures/texture_3.xpm",
+			&env->width_img3, &env->height_img3);
+	env->texture3 = mlx_get_data_addr(ptr, &bpp,
+			&s_l, &endian);
+	ptr = mlx_xpm_file_to_image(env->mlx, "textures/texture_4.xpm",
+			&env->width_img4, &env->height_img4);
+	env->texture4 = mlx_get_data_addr(ptr, &bpp,
+			&s_l, &endian);
 }
 
 void	ft_get_position(t_env *env)
@@ -59,48 +76,134 @@ void	ft_get_position(t_env *env)
 		ft_error("Map error");
 }
 
-int		ft_intab(t_env *env, int x, int y)
+int		ft_intab(t_env *env, double x, double y)
 {
-	if (x < 0 || y < 0 || x >= env->map_x || y >= env->map_y)
+	int	rx;
+	int ry;
+
+	rx = (int)floor(x);
+	ry = (int)floor(y);
+	if (rx < 0 || ry < 0 || rx >= env->map_x || ry >= env->map_y)
+		return (0);
+	if (env->map[ry][rx] > 0)
 		return (0);
 	return (1);
 }
 
-void	ft_trump(t_env *env, int x, int h, int color)
+int		ft_color(t_env *env, int y, int h)
+{
+	int	x;
+
+	if (env->side == 1)
+	{
+		if (env->ratio_y < 0)
+			x = fmod(env->round_x, 1) * env->width_img;
+		else
+			x = (1 - fmod(env->round_x, 1)) * env->width_img;
+	}
+	else
+	{
+		if (env->ratio_x < 0)
+			x = (1 - fmod(env->round_y, 1)) * env->width_img;
+		else
+			x = fmod(env->round_y, 1) * env->width_img;
+	}
+	if (h >= HEIGHT)
+		y = y + ((h - HEIGHT) / 2);
+	y = (double)y / (double)h * env->height_img;
+	x = ((y * env->width_img) + x) * 4;
+	if (x < 0 || x >= env->width_img * env->height_img * 4)
+		return (0);
+	return ((env->texture[x]) + (env->texture[x + 1] << 8) + (env->texture[x + 2] << 16));
+}
+
+void	ft_trump(t_env *env, int x, int h)
 {
 	int y;
+	int sy;
 
 	y = 0;
 	while (y < (HEIGHT / 2) - (h / 2) && y < HEIGHT)
 	{
-		ft_fill_pixel(env, x, y, 0xFFFFFF);
+		ft_fill_pixel(env, x, y, 0xcfdeee);
 		y++;
 	}
+	sy = y;
 	while (y < (HEIGHT / 2) + (h / 2) && y < HEIGHT)
 	{
-		ft_fill_pixel(env, x, y, color);
+		ft_fill_pixel(env, x, y, ft_color(env, y - sy, h));
 		y++;
 	}
 	while (y < HEIGHT)
 	{
-		ft_fill_pixel(env, x, y, 0x000000);
+		ft_fill_pixel(env, x, y, 0x767676);
 		y++;
 	}
 }
 
-int		ft_color(int side, double ratio_x, double ratio_y)
+void	ft_get_texture2(t_env *env)
 {
-	if (side == 0)
+	if (env->side != 0)
 	{
-		if (ratio_x < 0)
-			return (0xFF0000);
-		return (0x00FF00);
+		if (env->ratio_y < 0)
+		{
+			env->texture = env->texture3;
+			env->width_img = env->width_img3;
+			env->height_img = env->height_img3;
+		}
+		else
+		{
+			env->texture = env->texture4;
+			env->width_img = env->width_img4;
+			env->height_img = env->height_img4;
+		}
 	}
-	else
+}
+
+void	ft_get_texture(t_env *env)
+{
+	if (env->side == 0)
 	{
-		if (ratio_y < 0)
-			return (0x0000FF);
-		return (0xF0F0F0);
+		if (env->ratio_x < 0)
+		{
+			env->texture = env->texture1;
+			env->width_img = env->width_img1;
+			env->height_img = env->height_img1;
+		}
+		else
+		{
+			env->texture = env->texture2;
+			env->width_img = env->width_img2;
+			env->height_img = env->height_img2;
+		}
+	}
+	ft_get_texture2(env);
+}
+
+void	ft_while(t_env *env)
+{
+	while (ft_intab(env, env->round_x, env->round_y))
+	{
+		if (ft_intab(env, env->round_x, env->round_y +
+			(env->ratio_y / 500)) == 0)
+		{
+			env->round_y += env->ratio_y / 500;
+			env->side = 1;
+			break ;
+		}
+		if (ft_intab(env, env->round_x +
+			(env->ratio_x / 500), env->round_y) == 0)
+		{
+			env->round_x += env->ratio_x / 500;
+			env->side = 0;
+			break ;
+		}
+		env->round_x += env->ratio_x / 500;
+		env->round_y += env->ratio_y / 500;
+		if (env->ratio_x > env->ratio_y)
+			env->side = 0;
+		else
+			env->side = 1;
 	}
 }
 
@@ -116,35 +219,16 @@ void	ft_display(t_env *env)
 		angle = fmod(angle, 360);
 		if (angle < 0)
 			angle += 360;
-		double round_x = env->player_x;
-		double round_y = env->player_y;
-		double ratio_x = sin(angle * M_PI / 180);
-		double ratio_y = cos(angle * M_PI / 180) * -1;
-		int side;
-		while (ft_intab(env, (int)floor(round_x), (int)floor(round_y)) && env->map[(int)floor(round_y)][(int)floor(round_x)] < 1)
-		{
-			if (env->map[(int)floor(round_y + (ratio_y / 500))][(int)floor(round_x)] > 0)
-			{
-				round_y += ratio_y / 500;
-				side = 1;
-				break ;
-			}
-			if (env->map[(int)floor(round_y)][(int)floor(round_x + (ratio_x / 500))] > 0)
-			{
-				round_x += ratio_x / 500;
-				side = 0;
-				break ;
-			}
-			round_x += ratio_x / 500;
-			round_y += ratio_y / 500;
-			if (ratio_x > ratio_y)
-				side = 0;
-			else
-				side = 1;
-		}
-		double distance = sqrt(pow(env->player_x - round_x, 2) + pow(env->player_y - round_y, 2));
-		distance *= cos((angle - env->angle) * M_PI / 180);
-		ft_trump(env, x, HEIGHT / distance, ft_color(side, ratio_x, ratio_y));
+		env->round_x = env->player_x;
+		env->round_y = env->player_y;
+		env->ratio_x = sin(angle * M_PI / 180);
+		env->ratio_y = cos(angle * M_PI / 180) * -1;
+		ft_while(env);
+		env->distance = sqrt(pow(env->player_x - env->round_x, 2) +
+			pow(env->player_y - env->round_y, 2));
+		env->distance *= cos((angle - env->angle) * M_PI / 180);
+		ft_get_texture(env);
+		ft_trump(env, x, HEIGHT / env->distance);
 		angle += 60 / (double)WIDTH;
 		x++;
 	}

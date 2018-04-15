@@ -15,20 +15,23 @@
 
 int		ft_input(int key, t_env *env)
 {
-	double ratio_x = sin(env->angle * M_PI / 180);
-	double ratio_y = cos(env->angle * M_PI / 180) * -1;
-
+	env->ratio_x = sin(env->angle * M_PI / 180) / 10;
+	env->ratio_y = cos(env->angle * M_PI / 180) * -1 / 10;
 	if (key == 53)
 		exit(0);
 	else if (key == 13)
 	{
-		env->player_x += ratio_x;
-		env->player_y += ratio_y;
+		if (ft_intab(env, env->player_x + env->ratio_x, env->player_y))
+			env->player_x += env->ratio_x;
+		if (ft_intab(env, env->player_x, env->player_y + env->ratio_y))
+			env->player_y += env->ratio_y;
 	}
 	else if (key == 1)
 	{
-		env->player_x -= ratio_x;
-		env->player_y -= ratio_y;
+		if (ft_intab(env, env->player_x - env->ratio_x, env->player_y))
+			env->player_x -= env->ratio_x;
+		if (ft_intab(env, env->player_x, env->player_y - env->ratio_y))
+			env->player_y -= env->ratio_y;
 	}
 	else if (key == 2)
 		env->angle += 5;
