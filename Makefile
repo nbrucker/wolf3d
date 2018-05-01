@@ -22,7 +22,7 @@ OBJSDIR = objs/
 
 CC = gcc
 
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -O3
 
 SRCS = main.c \
 		free.c \
