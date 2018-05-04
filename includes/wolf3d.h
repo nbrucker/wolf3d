@@ -75,7 +75,7 @@ void				ft_freelist(t_line *line);
 int					ft_listlen(t_line *line);
 int					ft_maplen(char **s1);
 void				ft_usage(void);
-void				ft_add(t_line **ptr, char **split);
+void				ft_add(t_line **ptr, char *line);
 int					*ft_char_to_int(char **split, int len);
 int					**ft_list_to_map(t_env *env, t_line *line);
 void				ft_get_map(t_env *env, char *file);
@@ -87,5 +87,6 @@ int					ft_input(int key, t_env *env);
 void				ft_init_mlx(t_env *env);
 void				ft_display(t_env *env);
 int					ft_intab(t_env *env, double x, double y);
+void				ft_check_split(char **split);
 
 #endif

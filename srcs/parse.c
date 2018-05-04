@@ -33,7 +33,7 @@ void	ft_check_map(t_env *env)
 	}
 }
 
-void	ft_add(t_line **ptr, char **split)
+void	ft_add(t_line **ptr, char *line)
 {
 	t_line *new;
 
@@ -44,7 +44,9 @@ void	ft_add(t_line **ptr, char **split)
 	new->previous = *ptr;
 	*ptr = new;
 	new->next = NULL;
-	new->split = split;
+	if ((new->split = ft_strsplit(line, ' ')) == NULL)
+		ft_error("Malloc error");
+	ft_check_split(new->split);
 }
 
 int		*ft_char_to_int(char **split, int len)
@@ -98,7 +100,6 @@ void	ft_get_map(t_env *env, char *file)
 	int		ret;
 	char	*line;
 	t_line	*ptr;
-	char	**split;
 
 	if ((fd = open(file, O_RDONLY)) == -1)
 		ft_error("Error opening file");
@@ -106,8 +107,7 @@ void	ft_get_map(t_env *env, char *file)
 	ptr = NULL;
 	while ((ret = get_next_line(fd, &line)) > 0)
 	{
-		split = ft_strsplit(line, ' ');
-		ft_add(&ptr, split);
+		ft_add(&ptr, line);
 		ft_strdel(&line);
 	}
 	ft_strdel(&line);

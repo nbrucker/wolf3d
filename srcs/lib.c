@@ -55,3 +55,20 @@ int		ft_maplen(char **s1)
 		i++;
 	return (i);
 }
+
+void	ft_check_split(char **split)
+{
+	int		i;
+	char	*tmp;
+
+	i = 0;
+	while (split[i])
+	{
+		if ((tmp = ft_itoa(ft_atoi(split[i]))) == NULL)
+			ft_error("Malloc error");
+		if (ft_strcmp(tmp, split[i]) != 0)
+			ft_error("Map error");
+		free(tmp);
+		i++;
+	}
+}
