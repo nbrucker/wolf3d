@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   wolf3d.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nbrucker <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: nbrucker <nbrucker@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/07 12:25:50 by nbrucker          #+#    #+#             */
-/*   Updated: 2018/04/07 12:25:51 by nbrucker         ###   ########.fr       */
+/*   Updated: 2018/05/09 09:48:48 by dolivier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include <string.h>
 # include <stdlib.h>
 # include <math.h>
-#include <stdio.h>
+# include <stdio.h>
 
 # define WIDTH 800
 # define HEIGHT 600
@@ -69,24 +69,28 @@ typedef struct		s_pos
 	double			y;
 }					t_pos;
 
-void				ft_freechar(char **map);
-void				ft_freeint(int **map, int len);
-void				ft_freelist(t_line *line);
-int					ft_listlen(t_line *line);
-int					ft_maplen(char **s1);
-void				ft_usage(void);
-void				ft_add(t_line **ptr, char *line);
-int					*ft_char_to_int(char **split, int len);
-int					**ft_list_to_map(t_env *env, t_line *line);
-void				ft_get_map(t_env *env, char *file);
-void				ft_check_map(t_env *env);
-int					ft_expose(t_env *env);
-void				ft_fill_pixel(t_env *env, int x, int y, int color);
 int					ft_exit(t_env *env);
+int					ft_maplen(char **s1);
+int					ft_expose(t_env *env);
+int					ft_listlen(t_line *line);
 int					ft_input(int key, t_env *env);
-void				ft_init_mlx(t_env *env);
-void				ft_display(t_env *env);
+int					ft_color(t_env *env, int y, int h);
+int					*ft_char_to_int(char **split, int len);
 int					ft_intab(t_env *env, double x, double y);
+int					**ft_list_to_map(t_env *env, t_line *line);
+void				ft_usage(void);
+void				ft_display(t_env *env);
+void				ft_freechar(char **map);
+void				ft_init_mlx(t_env *env);
+void				ft_check_map(t_env *env);
+void				ft_freelist(t_line *line);
+void				ft_get_position(t_env *env);
 void				ft_check_split(char **split);
+void				ft_freeint(int **map, int len);
+void				ft_add(t_line **ptr, char *line);
+void				ft_get_map(t_env *env, char *file);
+void				ft_trump(t_env *env, int x, int h);
+void				ft_fill_pixel(t_env *env, int x, int y, int color);
+void				ft_init_mlx_2(t_env *env, int bpp, int s_l, int endian);
 
 #endif
